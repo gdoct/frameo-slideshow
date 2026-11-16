@@ -1,0 +1,106 @@
+html, body {
+  margin: 0; height: 100%; overflow: hidden;
+  background: #000; color: #eee;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  touch-action: none;              /* we handle swipes ourselves */
+  overscroll-behavior: none;       /* no pull-to-refresh */
+  user-select: none; -webkit-user-select: none;
+  cursor: none;
+}
+
+#stage { position: fixed; inset: 0; overflow: hidden; }
+.show {
+  position: absolute; inset: 0;
+  transition: transform 600ms cubic-bezier(.2, .8, .2, 1);   /* SLIDE_MS in app.js */
+}
+
+/* ---- HUD shown briefly when switching slideshow ---- */
+#hud {
+  position: fixed; inset: 0; pointer-events: none;
+  opacity: 0; transition: opacity .4s;
+}
+#hud.on { opacity: 1; }
+#hud-name {
+  position: absolute; top: max(24px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%);
+  padding: .4em 1em; border-radius: 999px;
+  background: rgba(0, 0, 0, .55); backdrop-filter: blur(8px);
+  font-size: clamp(16px, 2.5vmin, 28px); letter-spacing: .05em;
+}
+#hud-dots {
+  position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 10px;
+}
+#hud-dots span { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, .35); }
+#hud-dots span.on { background: #fff; }
+
+/* ---- photo slideshows ---- */
+.photos { background: #000; }
+.photos img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: contain; opacity: 0; transition: opacity 1s ease;
+  will-change: transform, opacity;
+}
+.photos img.on { opacity: 1; }
+.message {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  padding: 16px; text-align: center; color: #888; font-size: clamp(16px, 3vmin, 32px);
+}
+
+/* ---- split-flap clock ---- */
+.clock {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4vmin; background: radial-gradient(circle at 50% 40%, #1b1b1b, #000 75%);
+  font-family: "Helvetica Neue", Arial, sans-serif; font-weight: 700;
+}
+.time { display: flex; align-items: center; font-size: min(26vw, 42vh); }
+.colon { font-size: .6em; color: #555; padding: 0 .08em; margin-top: -.1em; }
+.flaps { display: flex; gap: .06em; }
+.flaps.small { font-size: min(7vw, 10vh); }
+.flaps.small .flap { width: .82em; }
+
+.flap {
+  position: relative; width: .72em; height: 1.15em;
+  perspective: 4em; border-radius: .06em;
+  box-shadow: 0 .03em .08em rgba(0, 0, 0, .8);
+}
+.half {
+  position: absolute; left: 0; right: 0; height: 50%; overflow: hidden;
+  background: linear-gradient(#2a2a2a, #222); color: #f2f2f2;
+  backface-visibility: hidden;
+}
+.half span {
+  position: absolute; left: 0; right: 0; height: 200%;
+  line-height: 1.15em; text-align: center;
+}
+.half.t { top: 0; border-radius: .06em .06em 0 0; transform-origin: 50% 100%; }
+.half.t span { top: 0; }
+.half.b {
+  bottom: 0; border-radius: 0 0 .06em .06em; transform-origin: 50% 0;
+  background: linear-gradient(#1e1e1e, #262626);
+}
+.half.b span { bottom: 0; }
+/* hinge line */
+.flap::after {
+  content: ""; position: absolute; left: 0; right: 0; top: 50%; height: .02em;
+  background: #000; z-index: 3;
+}
+.half.fall { z-index: 2; animation: fall .25s ease-in forwards; }
+.half.rise { z-index: 2; transform: rotateX(90deg); animation: rise .25s .25s ease-out forwards; }
+@keyframes fall { to { transform: rotateX(-90deg); } }
+@keyframes rise { to { transform: rotateX(0); } }
+
+.weather { display: flex; flex-direction: column; align-items: center; gap: 1.5vmin; }
+.weather-text {
+  font-weight: 400; color: #999; font-size: clamp(14px, 3vmin, 30px); text-align: center;
+  padding: 0 16px;
+}
+
+/* ---- wireframe interstitials ---- */
+.wire { background: #000; }
+.wire canvas { display: block; width: 100%; height: 100%; }
+.wire::after {                    /* faint scanlines + vignette, like an old TV */
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background:
+    repeating-linear-gradient(to bottom, rgba(0, 0, 0, .22) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, .55) 100%);
+}

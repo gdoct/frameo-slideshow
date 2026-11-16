@@ -1,0 +1,18 @@
+# Slideshow app. Settings come from .env (see .env.example).
+name: slideshow
+
+services:
+  app:
+    build: .
+    image: slideshow:latest
+    container_name: slideshow
+    restart: unless-stopped
+    ports:
+      - "${BIND_ADDR:-0.0.0.0}:${PORT:-8088}:80"
+    volumes:
+      - ${PHOTOS_DIR:-./photos}:/photos:ro   # "nas" slideshow
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
