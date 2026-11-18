@@ -1,4 +1,4 @@
-# Slideshow app. Settings come from .env (see .env.example).
+# Photo service for the Frameo launcher. Settings come from .env (see .env.example).
 name: slideshow
 
 services:
@@ -8,9 +8,13 @@ services:
     container_name: slideshow
     restart: unless-stopped
     ports:
-      - "${BIND_ADDR:-0.0.0.0}:${PORT:-8088}:80"
-    volumes:
-      - ${PHOTOS_DIR:-./photos}:/photos:ro   # "nas" slideshow
+      - "${BIND_ADDR:-0.0.0.0}:${PORT:-8088}:8080"
+    environment:
+      IMMICH_URL: ${IMMICH_URL:?set IMMICH_URL in .env}
+      IMMICH_API_KEY: ${IMMICH_API_KEY:?set IMMICH_API_KEY in .env}
+      IMMICH_ALBUM: ${IMMICH_ALBUM:-Guido}
+      REFRESH_MINUTES: ${REFRESH_MINUTES:-60}
+      NODE_TLS_REJECT_UNAUTHORIZED: ${NODE_TLS_REJECT_UNAUTHORIZED:-1}
     logging:
       driver: json-file
       options:

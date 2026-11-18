@@ -1,3 +1,6 @@
-FROM nginx:1.27-alpine
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY src/ /usr/share/nginx/html/
+FROM node:22-alpine
+WORKDIR /app
+COPY src/ ./
+USER node
+EXPOSE 8080
+CMD ["node", "server.mjs"]
